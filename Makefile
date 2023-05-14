@@ -8,11 +8,11 @@ src/Saul/TestSaul: Saul.cf
 	cd src/Saul/ && (bnfc -m --cpp ../../Saul.cf -l -p Saul; cd ../../)
 	cd src/Saul/ && (make; cd ../../)
 
-build/saul-typechecker: src/Interpret.cpp src/TypeCheck.cpp src/TypeCheck.h src/VisitTypeCheck.cpp src/VisitTypeCheck.h src/Saul/TestSaul CMakeLists.txt
+build/saul-typechecker: src/main.cpp src/TypeCheck.cpp src/TypeCheck.h src/VisitTypeCheck.cpp src/VisitTypeCheck.h src/Saul/TestSaul CMakeLists.txt
 	cmake -S. -Bbuild
 	cmake --build build/ --target saul-typechecker --
 
 test: build/saul-typechecker
 	cd build/ && (ctest; cd ../)
 
-.PHONY: all typecheck interpret
+.PHONY: all typecheck

@@ -2,7 +2,8 @@
 #include <iostream>
 
 namespace Saul
-{ // Function to combine List of Parameters and ReturnType to unit TypeFun
+{ 
+    // Function to combine List of Parameters and ReturnType to unit TypeFun
     TypeFun *CombineFun(std::vector<Type *> Parameters, Type *ReturnType)
     {
         ListType *ListOfTypes = new ListType();
@@ -69,7 +70,6 @@ namespace Saul
 
     bool compareTypes(Type *subType, Type *superType);
 
-    // Добавить в Record проверку что имена параметров различные
     bool typerecordCompare(Type *subType, Type *superType)
     {
         auto showner = new ShowAbsyn();
@@ -227,6 +227,7 @@ namespace Saul
         for (auto item : this->declearedVariables)
             std::cout << item.first << " //IS OF TYPE// " << printer->print(item.second.type) << std::endl;
     }
+
     void VisitTypeCheck::visitProgram(Program *t) {}                   // abstract class
     void VisitTypeCheck::visitLanguageDecl(LanguageDecl *t) {}         // abstract class
     void VisitTypeCheck::visitDecl(Decl *t) {}                         // abstract class
@@ -257,8 +258,6 @@ namespace Saul
             std::cout << "Error: no main function in the code" << std::endl;
             exit(1);
         }
-
-        // this->printDeclVars();
     }
 
     void VisitTypeCheck::visitLanguageCore(LanguageCore *language_core)
@@ -342,14 +341,14 @@ namespace Saul
                       << "Right: " << showner->show(expr_2Type) << std::endl;
             exit(1);
         }
-
+        
         this->setLastReturn(new TypeUnit());
     }
 
     void VisitTypeCheck::visitRef(Ref *ref)
     {
         /* Code For Ref Goes Here */
-
+        
         if (ref->expr_)
             ref->expr_->accept(this);
         Type *expr_Type = this->getLastReturn();
@@ -378,6 +377,7 @@ namespace Saul
     void VisitTypeCheck::visitPanic(Panic *panic)
     {
         /* Code For Panic Goes Here */
+        
         this->setLastReturn(new TypeBottom());
     }
 
@@ -426,9 +426,7 @@ namespace Saul
     void VisitTypeCheck::visitTypeFun(TypeFun *type_fun)
     {
         /* Code For TypeFun Goes Here */
-        // fn (Nat, Nat) -> Nat
-        // fn (Nat) -> fn (Nat) -> Nat
-
+        
         if (type_fun->listtype_)
             type_fun->listtype_->accept(this);
         std::vector<Type *> listparamdeclCopy = this->getReturnTypesList();
@@ -516,7 +514,6 @@ namespace Saul
     void VisitTypeCheck::visitTypeRef(TypeRef *type_ref)
     {
         /* Code For TypeRef Goes Here */
-
         if (type_ref->type_)
             type_ref->type_->accept(this);
 
@@ -1133,11 +1130,23 @@ namespace Saul
     void VisitTypeCheck::visitAdd(Add *add)
     {
         /* Code For Add Goes Here */
-
+        
         if (add->expr_1)
             add->expr_1->accept(this);
+        Type *expr_1_Type = this->getLastReturn();
+
         if (add->expr_2)
             add->expr_2->accept(this);
+        Type *expr_2_Type = this->getLastReturn();
+
+        if (compareTypes(expr_2_Type, new TypeNat()) == false || compareTypes(expr_1_Type, new TypeNat()) == false)
+        {
+                std::cout << "Error: one of the sum parameters is not of type Nat" << std::endl
+                          << "On the line: " << add->line_number << std::endl;
+                exit(1);
+        }
+        
+        this->setLastReturn(new TypeNat());
     }
 
     void VisitTypeCheck::visitSubtract(Subtract *subtract)
@@ -1146,8 +1155,20 @@ namespace Saul
 
         if (subtract->expr_1)
             subtract->expr_1->accept(this);
+        Type *expr_1_Type = this->getLastReturn();
+
         if (subtract->expr_2)
             subtract->expr_2->accept(this);
+        Type *expr_2_Type = this->getLastReturn();
+
+        if (compareTypes(expr_2_Type, new TypeNat()) == false || compareTypes(expr_1_Type, new TypeNat()) == false)
+        {
+                std::cout << "Error: one of the subtraction parameters is not of type Nat" << std::endl
+                          << "On the line: " << subtract->line_number << std::endl;
+                exit(1);
+        }
+
+        this->setLastReturn(new TypeNat());
     }
 
     void VisitTypeCheck::visitLogicOr(LogicOr *logic_or)
@@ -1156,8 +1177,20 @@ namespace Saul
 
         if (logic_or->expr_1)
             logic_or->expr_1->accept(this);
+        Type *expr_1_Type = this->getLastReturn();
+
         if (logic_or->expr_2)
             logic_or->expr_2->accept(this);
+        Type *expr_2_Type = this->getLastReturn();
+
+        if (compareTypes(expr_2_Type, new TypeBool()) == false || compareTypes(expr_1_Type, new TypeBool()) == false)
+        {
+                std::cout << "Error: one of the \"or\" operation parameters is not of type Nat" << std::endl
+                          << "On the line: " << logic_or->line_number << std::endl;
+                exit(1);
+        }
+
+        this->setLastReturn(new TypeBool());
     }
 
     void VisitTypeCheck::visitMultiply(Multiply *multiply)
@@ -1166,8 +1199,20 @@ namespace Saul
 
         if (multiply->expr_1)
             multiply->expr_1->accept(this);
+        Type *expr_1_Type = this->getLastReturn();
+
         if (multiply->expr_2)
             multiply->expr_2->accept(this);
+        Type *expr_2_Type = this->getLastReturn();
+
+        if (compareTypes(expr_2_Type, new TypeNat()) == false || compareTypes(expr_1_Type, new TypeNat()) == false)
+        {
+                std::cout << "Error: one of the multiplication parameters is not of type Nat" << std::endl
+                          << "On the line: " << multiply->line_number << std::endl;
+                exit(1);
+        }
+        
+        this->setLastReturn(new TypeNat());
     }
 
     void VisitTypeCheck::visitDivide(Divide *divide)
@@ -1176,8 +1221,20 @@ namespace Saul
 
         if (divide->expr_1)
             divide->expr_1->accept(this);
+        Type *expr_1_Type = this->getLastReturn();
+
         if (divide->expr_2)
             divide->expr_2->accept(this);
+        Type *expr_2_Type = this->getLastReturn();
+
+        if (compareTypes(expr_2_Type, new TypeNat()) == false || compareTypes(expr_1_Type, new TypeNat()) == false)
+        {
+                std::cout << "Error: one of the division parameters is not of type Nat" << std::endl
+                          << "On the line: " << divide->line_number << std::endl;
+                exit(1);
+        }
+
+        this->setLastReturn(new TypeNat());
     }
 
     void VisitTypeCheck::visitLogicAnd(LogicAnd *logic_and)
@@ -1186,8 +1243,20 @@ namespace Saul
 
         if (logic_and->expr_1)
             logic_and->expr_1->accept(this);
+        Type *expr_1_Type = this->getLastReturn();
+
         if (logic_and->expr_2)
             logic_and->expr_2->accept(this);
+        Type *expr_2_Type = this->getLastReturn();
+
+        if (compareTypes(expr_2_Type, new TypeBool()) == false || compareTypes(expr_1_Type, new TypeBool()) == false)
+        {
+                std::cout << "Error: one of the \"and\" operation parameters is not of type Nat" << std::endl
+                          << "On the line: " << logic_and->line_number << std::endl;
+                exit(1);
+        }
+
+        this->setLastReturn(new TypeBool());
     }
 
     void VisitTypeCheck::visitApplication(Application *application)
@@ -1231,7 +1300,7 @@ namespace Saul
         // Number of function arguments is greater then number of passing parameters
         if (Arguments.size() > listexpr_Copy.size())
         {
-            std::cout << "Error: not enaught parameters for the function" << std::endl
+            std::cout << "Error: not enaugh parameters for the function" << std::endl
                       << "Name: " << getNodeID(application->expr_) << std::endl
                       << "On the line: " << application->expr_->line_number << std::endl;
             exit(1);
@@ -1244,7 +1313,8 @@ namespace Saul
             {
                 std::cout << "Error: incorrect parameters in the function call" << std::endl;
                 std::cout << "Function name: " << getNodeID(application->expr_) << std::endl
-                          << "Expected: " << showner->show(Arguments[i]) << std::endl;
+                          << "Expected: " << showner->show(Arguments[i]) << std::endl
+                          << "On the line: " << application->expr_->line_number << std::endl;
                 exit(1);
             }
         }
@@ -1345,12 +1415,11 @@ namespace Saul
 
         if (record->listbinding_)
             record->listbinding_->accept(this);
-        // Дописать сборщик типов
         std::vector<Type *> listbindingCopy = this->getReturnTypesList();
 
         ListRecordFieldType *returnTypeList = new ListRecordFieldType();
-
         int j = listbindingCopy.size() - 1;
+
         for (ListBinding::iterator i = record->listbinding_->end() - 1; i != record->listbinding_->begin() - 1; --i, --j)
         {
             ABinding *AB = (ABinding *)(*i);
@@ -1415,6 +1484,16 @@ namespace Saul
 
         if (logic_not->expr_)
             logic_not->expr_->accept(this);
+        Type *expr_1_Type = this->getLastReturn();
+
+        if (compareTypes(expr_1_Type, new TypeBool()) == false)
+        {
+                std::cout << "Error: one of the \"not\" operation parameters is not of type Nat" << std::endl
+                          << "On the line: " << logic_not->line_number << std::endl;
+                exit(1);
+        }
+
+        this->setLastReturn(new TypeBool());
     }
 
     void VisitTypeCheck::visitPred(Pred *pred)
@@ -1445,7 +1524,7 @@ namespace Saul
 
         if (is_zero->expr_)
             is_zero->expr_->accept(this);
-                Type *expr_Type = this->getLastReturn();
+        Type *expr_Type = this->getLastReturn();
 
         // Check if succ parameter is correctly handled
         nullptrCheck(expr_Type, is_zero->expr_->line_number, is_zero->expr_->char_number);

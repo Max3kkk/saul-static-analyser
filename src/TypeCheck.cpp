@@ -11,4 +11,4 @@ namespace Saul
     program->accept(new VisitTypeCheck());
   }
 
-} // namespace Saul
+}
