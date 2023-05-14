@@ -1,0 +1,134 @@
+comment "//" ;
+comment "/*" "*/" ;
+
+token SaulIdent ((letter | '_') (letter | digit | '_' | '-' | '!' | '?' | ':')*) ;
+
+AProgram.  Program ::= LanguageDecl [Decl] ;
+
+separator SaulIdent "," ;
+
+LanguageCore. LanguageDecl ::= "language" "core" ";" ;
+
+DeclFun.    Decl ::= [Annotation] "fn" SaulIdent "(" [ParamDecl] ")" ReturnType "{" [Decl] "return" Expr "}" ;
+separator Decl "" ;
+
+ALocalDecl. LocalDecl ::= Decl ;
+terminator LocalDecl ";" ;
+
+InlineAnnotation. Annotation ::= "inline" ;
+separator Annotation "" ;
+
+AParamDecl. ParamDecl ::= SaulIdent ":" Type ;
+separator ParamDecl "," ;
+
+NoReturnType.     ReturnType ::= ;
+SomeReturnType.   ReturnType ::= "->" Type ;
+
+_. Type9 ::= Type ;
+separator nonempty Type9 "," ;
+
+AMatchCase.    MatchCase ::= Pattern "=>" Expr ;
+separator MatchCase "|" ;
+
+PatternInl.     Pattern ::= "inl" "(" Pattern ")" ;
+PatternInr.     Pattern ::= "inr" "(" Pattern ")" ;
+PatternTuple.   Pattern ::= "{" [Pattern] "}" ;
+PatternRecord.  Pattern ::= "{" [LabelledPattern] "}" ;
+PatternFalse.   Pattern ::= "false" ;
+PatternTrue.    Pattern ::= "true" ;
+PatternUnit.    Pattern ::= "unit" ;
+PatternInt.     Pattern ::= Integer ;
+PatternSucc.    Pattern ::= "succ" "(" Pattern ")" ;
+PatternVar.     Pattern ::= SaulIdent ;
+_.              Pattern ::= "(" Pattern ")" ;
+separator Pattern "," ;
+
+ALabelledPattern. LabelledPattern ::= SaulIdent "=" Pattern ;
+separator nonempty LabelledPattern "," ;
+
+ABinding.      Binding ::= SaulIdent "=" Expr ;
+
+separator nonempty Binding "," ;
+
+Sequence.            Expr ::= Expr1 ";" Expr ;
+_.                   Expr ::= Expr1 ";" ;
+separator Expr "," ;
+
+Assign.       Expr1 ::= Expr2 ":=" Expr1;
+If.           Expr1 ::= "if" Expr1 "then" Expr1 "else" Expr1 ;
+
+LessThan.           Expr2 ::= Expr3 "<" Expr3 ;
+LessThanOrEqual.    Expr2 ::= Expr3 "<=" Expr3 ;
+GreaterThan.        Expr2 ::= Expr3 ">" Expr3 ;
+GreaterThanOrEqual. Expr2 ::= Expr3 ">=" Expr3 ;
+Equal.              Expr2 ::= Expr3 "==" Expr3 ;
+NotEqual.           Expr2 ::= Expr3 "!=" Expr3 ;
+terminator nonempty Expr2 ";" ;
+
+Abstraction.  Expr3 ::= "fn" "(" [ParamDecl] ")" "{" "return" Expr "}" ;
+Match.        Expr3 ::= "match" Expr2 "{" [MatchCase] "}" ;
+Add.          Expr3 ::= Expr3 "+" Expr4 ;
+Subtract.     Expr3 ::= Expr3 "-" Expr4 ;
+LogicOr.      Expr3 ::= Expr3 "or" Expr4;
+
+Multiply.     Expr4 ::= Expr4 "*" Expr5 ;
+Divide.       Expr4 ::= Expr4 "/" Expr5 ;
+LogicAnd.     Expr4 ::= Expr4 "and" Expr5 ;
+
+Ref.          Expr5 ::= "new" "(" Expr5 ")" ;
+Deref.        Expr5 ::= "*" Expr5 ;
+
+Application.  Expr6 ::= Expr6 "(" [Expr] ")" ;
+
+DotRecord.    Expr6 ::= Expr6 "." SaulIdent ;
+DotTuple.     Expr6 ::= Expr6 "." Integer ;
+Tuple.        Expr6 ::= "{" [Expr] "}" ;
+Record.       Expr6 ::= "{" [Binding] "}" ;
+
+Panic.        Expr6 ::= "panic!" ;
+
+Inl.          Expr6 ::= "inl" "(" Expr ")" ;
+Inr.          Expr6 ::= "inr" "(" Expr ")" ;
+Succ.         Expr6 ::= "succ" "(" Expr ")" ;
+LogicNot.     Expr6 ::= "not" "(" Expr ")" ;
+Pred.         Expr6 ::= "Nat::pred" "(" Expr ")" ;
+IsZero.       Expr6 ::= "Nat::iszero" "(" Expr ")" ;
+
+NatRec.       Expr6 ::= "Nat::rec" "(" Expr "," Expr "," Expr ")" ;
+
+ConstTrue.    Expr7 ::= "true" ;
+ConstFalse.   Expr7 ::= "false" ;
+ConstUnit.    Expr7 ::= "unit" ;
+ConstInt.     Expr7 ::= Integer ;
+Var.          Expr7 ::= SaulIdent ;
+
+TypeFun.      Type ::= "fn" "(" [Type] ")" "->" Type ;
+TypeSum.      Type1 ::= Type2 "+" Type2;
+TypeTuple.    Type2 ::= "{" [Type] "}" ;
+TypeRecord.   Type2 ::= "{" [RecordFieldType] "}" ;
+TypeBool.     Type3 ::= "Bool" ;
+TypeNat.      Type3 ::= "Nat" ;
+TypeUnit.     Type3 ::= "Unit" ;
+TypeTop.      Type3 ::= "Top" ;
+TypeBottom.   Type3 ::= "Bot" ;
+TypeRef.      Type3 ::= "&" Type2 ;
+TypeVar.      Type3 ::= SaulIdent ;
+separator Type "," ;
+
+_. Expr   ::= Expr1 ;
+_. Expr1  ::= Expr2 ;
+_. Expr2  ::= Expr3 ;
+_. Expr3  ::= Expr4 ;
+_. Expr4  ::= Expr5 ;
+_. Expr5  ::= Expr6 ;
+_. Expr6  ::= Expr7 ;
+_. Expr7  ::= "(" Expr ")" ;
+
+ARecordFieldType.  RecordFieldType ::= SaulIdent ":" Type ;
+separator nonempty RecordFieldType "," ;
+
+_.  Type  ::= Type1 ;
+_.  Type1 ::= Type2 ;
+_.  Type2 ::= Type3 ;
+_.  Type3 ::= "(" Type ")" ;
+

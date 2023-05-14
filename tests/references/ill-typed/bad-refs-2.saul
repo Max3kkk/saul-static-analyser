@@ -1,0 +1,9 @@
+language core;
+
+fn inc(ref : &Nat) -> Unit {
+    return ref := succ(*ref)
+}
+
+fn main(input : Nat) -> Nat {
+    return inc(new(input)); *input
+}

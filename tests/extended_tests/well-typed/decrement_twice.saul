@@ -1,0 +1,10 @@
+language core;
+
+fn decrement_twice(n : Nat) -> Nat {
+  return Nat::pred(Nat::pred(n));
+}
+
+fn main(n : Nat) -> Nat {
+  return decrement_twice(n);
+}
+

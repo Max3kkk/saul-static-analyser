@@ -1,0 +1,9 @@
+language core;
+
+fn f(r : {y : Nat, x : Nat}) -> Nat {
+  return r.x
+}
+
+fn main(n : Nat) -> Nat {
+  return f({x = n, y = n});
+}

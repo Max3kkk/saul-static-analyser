@@ -1,0 +1,9 @@
+language core;
+
+fn ignore(_ : Nat) -> Unit {
+  return unit
+}
+
+fn main(x : Nat) -> Nat {
+	return x 		 
+}

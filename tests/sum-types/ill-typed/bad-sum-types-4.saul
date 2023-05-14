@@ -1,0 +1,11 @@
+language core;
+
+fn g(x : Nat + (Bool + (fn(Nat) -> Nat))) -> Nat {
+  return match x {
+      inl(n) => succ(n)
+  }
+}
+
+fn main(x : Nat) -> Nat {
+  return g(inr(inr(fn(n : Nat) { return g(inl(n)) })))
+}
